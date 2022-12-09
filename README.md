@@ -23,13 +23,17 @@ How to use:
 
 For the script using it:
 
+    import importlib
     from overlaymodule import OverlayFinder
+
+    module_spec = importlib.util.find_spec('a')
+    module_path = odoo_spec.submodule_search_locations[0]
 
     sys.meta_path.insert(
         0,
         OverlayFinder(
             'a',
-            "/path/to/package/a",
+            module_path,
             overlays=[
                 "o.overlay",
             ]
