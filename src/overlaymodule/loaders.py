@@ -15,6 +15,7 @@ class OverlayLoader(SourceFileLoader):
 
     def get_filename(self, fullname):
         module = fullname.split('.')
+        module_path = None
 
         if module[0] == self.base_module:
             module_path = self.base_path / "/".join(module[1:])
@@ -40,6 +41,10 @@ class OverlayLoader(SourceFileLoader):
         if not self._looked_up_overlays:
             for overlay in self.overlays:
                 spec = importlib.util.find_spec(str(overlay))
+
+                if not spec:
+                    continue
+
                 for location in spec.submodule_search_locations:
                     path = Path(location)
                     for file in path.glob("**/*.py"):
