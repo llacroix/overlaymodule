@@ -22,7 +22,7 @@ def find_in_path(module, path):
 
 setuptools.setup(
     name="overlaymodule",
-    version="0.0.2",
+    version="0.0.3",
     author="Loïc Faure-Lacroix",
     author_email="lamerstar@gmail.com",
     description="A Special Module Loader that can load modules with overlays.",
