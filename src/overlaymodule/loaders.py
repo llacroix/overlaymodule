@@ -2,6 +2,7 @@ from pathlib import Path
 import importlib
 from importlib import _bootstrap
 from importlib._bootstrap_external import SourceFileLoader
+import pdb
 
 
 class OverlayLoader(SourceFileLoader):
@@ -12,8 +13,14 @@ class OverlayLoader(SourceFileLoader):
         self.overlays = overlays
         self._overlayed_modules = {}
         self._looked_up_overlays = False
+        self.modules = {}
 
     def get_filename(self, fullname):
+        if fullname in self.modules:
+            module = self.modules[fullname]
+            if Path(module.__file__).exists():
+                return module.__file__
+
         module = fullname.split('.')
         module_path = None
 
@@ -69,6 +76,8 @@ class OverlayLoader(SourceFileLoader):
         return self._overlayed_modules.get(module.__name__, [])
 
     def exec_module(self, module):
+        self.modules[module.__name__] = module
+
         super().exec_module(module)
 
         for overlay in self.overlayed_modules(module):
