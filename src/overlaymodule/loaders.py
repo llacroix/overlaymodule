@@ -78,8 +78,21 @@ class OverlayLoader(SourceFileLoader):
     def exec_module(self, module):
         self.modules[module.__name__] = module
 
+        if '__overlays__' not in module.__dict__:
+            module.__dict__['__overlays__'] = list()
+
         super().exec_module(module)
 
         for overlay in self.overlayed_modules(module):
+
+            # Prevent loading multiple time the same overlay
+            if overlay in module.__dict__['__overlays__']:
+                continue
+
+            # Track that this overlay is being loaded, I suspect that
+            # double loading might be caused by having a module not
+            # completely loaded reloading the module causing the exec
+            # to be called again on itself.
+            module.__dict__['__overlays__'].append(overlay)
             code = self.get_code(overlay)
             _bootstrap._call_with_frames_removed(exec, code, module.__dict__)
